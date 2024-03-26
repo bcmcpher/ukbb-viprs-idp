@@ -1,0 +1,9 @@
+*~
+*.sif
+archive
+data
+git
+bin/junk
+bin/logs
+bin/ukbb-cca
+bin/venv-*

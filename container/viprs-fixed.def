@@ -1,0 +1,10 @@
+Bootstrap: docker
+From: python:3.8-bookworm
+
+%files
+	./requirements.txt /requirements.txt
+
+%post
+	apt update && apt install -y plink2
+	pip install --upgrade pip
+	pip install -r /requirements.txt
