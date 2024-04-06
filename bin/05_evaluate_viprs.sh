@@ -39,7 +39,7 @@ python copy-pheno-to-file.py --pheno $IDP --keep True
 
 apptainer exec -B $PROJDIR -B $TMPDIR \
 	  $PROJDIR/container/viprs-fixed.sif \
-	  viprs_evaluate --prs-file viprs-evals/$IDP.prs \
-	  --phenotype-file viprs-evals/${IDP}-eval.tsv \
+	  viprs_evaluate --prs-file $DATADIR/viprs-scores/$IDP.prs \
+	  --phenotype-file $DATADIR/viprs-evals/${IDP}-eval.tsv \
 	  --phenotype-likelihood gaussian \
-	  --output-file viprs-evals/${IDP}_out
+	  --output-file $DATADIR/viprs-evals/${IDP}-outs
