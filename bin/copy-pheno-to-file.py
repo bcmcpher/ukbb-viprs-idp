@@ -22,7 +22,7 @@ keep = args.keep
 projdir = "/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp"
 datadir = Path(projdir, "data")
 keepdir = Path(datadir, "keep_files")
-outsdir = Path(datadir, "viprs_evals")
+outsdir = Path(datadir, "viprs-evals")
 
 print("Loading the IDPs Legend to extract sample size...")
 
@@ -34,11 +34,17 @@ ukbb_var = summary.loc[summary['Pheno'] == pheno, 'UKB ID'].values[0]
 
 # The expected format is: FID IID phenotype (no header), tab-separated.
 
-# add participant id, selected variable (need FID?)
+# add participant id, selected variable
 usecols = ['eid', ukbb_var]
 
 # load just the columns to write
-data = pd.read_csv(Path(datadir, "ukbb_idps_ses-2.csv"), index_col=0, usecols=usecols)
+data = pd.read_csv(Path(datadir, "ukbb_idps_ses-2.csv"), usecols=usecols)
+
+# this assumes no related individuals kept - family ID is just a copy of subj ID
+data['fid'] = data.loc[:, 'eid']
+
+# reorder columns for clean export
+data = data[['fid', 'eid', pheno]]
 
 # if keep is passed
 if keep:
@@ -47,10 +53,10 @@ if keep:
     krows = pd.read_csv(Path(keepdir, "ukbb_qc_variants.keep"))
 
     # keep and sort the IDs that having imaging data and match keep file
-    df = data.loc[sorted(list(set(data.index) & set(krows.squeeze())))]
+    df = data.loc[data['eid'].isin(set(krows.squeeze()))]
 
-    # drop missing from final out
+    # drop missing from final out (?)
     # df.dropna(inplace=True)
 
 # write appened / fixed file
-df.to_csv(Path(outsdir, f"{pheno}-eval.txt"), sep="\t", header=False)
+df.to_csv(Path(outsdir, f"{pheno}-eval.tsv"), sep="\t", index=False, header=False)
