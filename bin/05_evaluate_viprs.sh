@@ -35,11 +35,12 @@ echo "Scoring VIPRS on IDP: $IDP"
 gunzip $SCORES
 
 # create the evaluation pheno file
-python copy-pheno-to-file.py --pheno $IDP --keep True
+python $PROJDIR/bin/copy-pheno-to-file.py --pheno $IDP --keep True
 
+# run the evaluation
 apptainer exec -B $PROJDIR -B $TMPDIR \
 	  $PROJDIR/container/viprs-fixed.sif \
-	  viprs_evaluate --prs-file $DATADIR/viprs-scores/$IDP.prs \
+	  viprs_evaluate --prs-file $DATADIR/viprs-scores/$RUN/$IDP.prs \
 	  --phenotype-file $DATADIR/viprs-evals/${IDP}-eval.tsv \
 	  --phenotype-likelihood gaussian \
 	  --output-file $DATADIR/viprs-evals/${IDP}-outs
