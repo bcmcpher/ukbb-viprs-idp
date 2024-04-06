@@ -44,7 +44,7 @@ data = pd.read_csv(Path(datadir, "ukbb_idps_ses-2.csv"), usecols=usecols)
 data['fid'] = data.loc[:, 'eid']
 
 # reorder columns for clean export
-data = data[['fid', 'eid', pheno]]
+data = data[['fid', 'eid', ukbb_var]]
 
 # load keep data
 krows = pd.read_csv(Path(keepdir, "ukbb_qc_variants.keep"))
