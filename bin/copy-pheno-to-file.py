@@ -24,7 +24,7 @@ datadir = Path(projdir, "data")
 keepdir = Path(datadir, "keep_files")
 outsdir = Path(datadir, "viprs-evals")
 
-print("Loading the IDPs Legend to extract sample size...")
+print("Loading the IDPs Legend to find UKBB index...")
 
 # load the summary data
 summary = pd.read_csv(Path(datadir, "idps_legend.csv"), header=0, index_col=0, na_values="-", converters={'Pheno': str})
@@ -45,9 +45,6 @@ data['fid'] = data.loc[:, 'eid']
 
 # reorder columns for clean export
 data = data[['fid', 'eid', pheno]]
-
-# if keep is passed
-# if keep:
 
 # load keep data
 krows = pd.read_csv(Path(keepdir, "ukbb_qc_variants.keep"))

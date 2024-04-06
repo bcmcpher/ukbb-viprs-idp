@@ -35,7 +35,7 @@ echo "Scoring VIPRS on IDP: $IDP"
 gunzip $SCORES
 
 # create the evaluation pheno file
-python $PROJDIR/bin/copy-pheno-to-file.py --pheno $IDP --keep True
+python $PROJDIR/bin/copy-pheno-to-file.py $IDP
 
 # run the evaluation
 apptainer exec -B $PROJDIR -B $TMPDIR \
