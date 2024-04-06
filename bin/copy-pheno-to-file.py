@@ -8,15 +8,15 @@ parser = argparse.ArgumentParser(description='Create phenotype file for VIPRS ev
 # add input to argparse
 parser.add_argument('pheno', type=str,
                     help='The unzipped phenotype file to load.')
-parser.add_argument('keep', type=str,
-                    help='The optional keep file to apply to the filter the rows.')
+# parser.add_argument('keep', type=str,
+#                     help='The optional keep file to apply to the filter the rows.')
 
 # parse
 args = parser.parse_args()
 
 # extract PHENO.txt
 pheno = args.pheno
-keep = args.keep
+#keep = args.keep
 
 # paths to run
 projdir = "/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp"
@@ -47,16 +47,16 @@ data['fid'] = data.loc[:, 'eid']
 data = data[['fid', 'eid', pheno]]
 
 # if keep is passed
-if keep:
+# if keep:
 
-    # load keep data
-    krows = pd.read_csv(Path(keepdir, "ukbb_qc_variants.keep"))
+# load keep data
+krows = pd.read_csv(Path(keepdir, "ukbb_qc_variants.keep"))
 
-    # keep and sort the IDs that having imaging data and match keep file
-    df = data.loc[data['eid'].isin(set(krows.squeeze()))]
+# keep and sort the IDs that having imaging data and match keep file
+df = data.loc[data['eid'].isin(set(krows.squeeze()))]
 
-    # drop missing from final out (?)
-    # df.dropna(inplace=True)
+# drop missing from final out (?)
+# df.dropna(inplace=True)
 
 # write appened / fixed file
 df.to_csv(Path(outsdir, f"{pheno}-eval.tsv"), sep="\t", index=False, header=False)
