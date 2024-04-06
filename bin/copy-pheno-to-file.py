@@ -1,4 +1,3 @@
-
 import argparse
 import pandas as pd
 from pathlib import Path
@@ -9,44 +8,49 @@ parser = argparse.ArgumentParser(description='Create phenotype file for VIPRS ev
 # add input to argparse
 parser.add_argument('pheno', type=str,
                     help='The unzipped phenotype file to load.')
-parsed.add_argument('keep', type = str,
+parser.add_argument('keep', type=str,
+                    help='The optional keep file to apply to the filter the rows.')
 
 # parse
 args = parser.parse_args()
 
 # extract PHENO.txt
 pheno = args.pheno
+keep = args.keep
 
 # paths to run
 projdir = "/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp"
 datadir = Path(projdir, "data")
-scratch = Path(datadir, "idps-fixed")
+keepdir = Path(datadir, "keep_files")
+outsdir = Path(datadir, "viprs_evals")
 
 print("Loading the IDPs Legend to extract sample size...")
 
 # load the summary data
-summary = pd.read_csv(Path(datadir, "idps_legend.csv"),
-                      header=0,
-                      index_col=0,
-                      na_values="-",
-                      converters={'Pheno': str})
+summary = pd.read_csv(Path(datadir, "idps_legend.csv"), header=0, index_col=0, na_values="-", converters={'Pheno': str})
 
-# get the N - make sure these are all present - some categories of N are missing...
-sample_size = summary.loc[summary['Pheno'] == pheno, 'N(all)'].values[0]
+# pick the column index to load
+ukbb_var = summary.loc[summary['Pheno'] == pheno, 'UKB ID'].values[0]
 
-print(f" -- Sample Size: {sample_size}")
-print(f"Loading the precomputed GWAS summary data for IDP: {pheno}")
+# The expected format is: FID IID phenotype (no header), tab-separated.
 
-# load the input
-df = pd.read_csv(Path(scratch, f"{pheno}.txt"), delim_whitespace=True)
+# add participant id, selected variable (need FID?)
+usecols = ['eid', ukbb_var]
 
-# assign the sample size based on the loaded feature
-df['N'] = sample_size
+# load just the columns to write
+data = pd.read_csv(Path(datadir, "ukbb_idps_ses-2.csv"), index_col=0, usecols=usecols)
 
-print("Writing corrected IDP summary data to disk...")
+# if keep is passed
+if keep:
 
-# fix the column names so VIPRS can read it 
-df.rename(columns={'chr':'CHR', 'pos':'POS', 'beta':'BETA', 'se':'SE', 'a1':'A1', 'a2':'A2', 'rsid':'SNP'}, inplace=True)
+    # load keep data
+    krows = pd.read_csv(Path(keepdir, "ukbb_qc_variants.keep"))
+
+    # keep and sort the IDs that having imaging data and match keep file
+    df = data.loc[sorted(list(set(data.index) & set(krows.squeeze())))]
+
+    # drop missing from final out
+    # df.dropna(inplace=True)
 
 # write appened / fixed file
-df.to_csv(Path(scratch, f"{pheno}-fixed.txt"), sep="\t", index=False)
+df.to_csv(Path(outsdir, f"{pheno}-eval.txt"), sep="\t", header=False)
