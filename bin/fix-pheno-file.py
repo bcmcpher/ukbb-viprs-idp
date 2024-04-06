@@ -1,4 +1,3 @@
-
 import argparse
 import pandas as pd
 from pathlib import Path
@@ -44,7 +43,7 @@ df['N'] = sample_size
 
 print("Writing corrected IDP summary data to disk...")
 
-# fix the column names so VIPRS can read it 
+# fix the column names so VIPRS can read it
 df.rename(columns={'chr':'CHR', 'pos':'POS', 'beta':'BETA', 'se':'SE', 'a1':'A1', 'a2':'A2', 'rsid':'SNP'}, inplace=True)
 
 # write appened / fixed file
