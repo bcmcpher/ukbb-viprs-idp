@@ -1,4 +1,3 @@
-
 # load dependency
 import json
 import pandas as pd
@@ -11,12 +10,12 @@ print(f"Accessing dataframe from html table at URL: {url}")
 data = pd.read_html(url)
 
 # format ingested data as a dataframe from a list
-print(f"Formatting list of html request into a DataFrame...")
+print("Formatting list of html request into a DataFrame...")
 output = pd.DataFrame(data[0])
 
 # drop the column of all missing
 # output.drop(index=0, inplace=True)
-output.drop(columns = "Unnamed: 4", inplace = True)
+output.drop(columns="Unnamed: 4", inplace=True)
 output.replace('-', pd.NA)
 
 # write the dataframe to disk as a .csv - w/o an index column
