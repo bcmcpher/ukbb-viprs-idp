@@ -8,6 +8,8 @@ parser = argparse.ArgumentParser(description='Create phenotype file for VIPRS ev
 # add input to argparse
 parser.add_argument('pheno', type=str,
                     help='The unzipped phenotype file to load.')
+parser.add_argument('outfile', type=str,
+                    help='The output file to write the extracted phenotype into.')
 # parser.add_argument('keep', type=str,
 #                     help='The optional keep file to apply to the filter the rows.')
 
@@ -16,7 +18,8 @@ args = parser.parse_args()
 
 # extract PHENO.txt
 pheno = args.pheno
-#keep = args.keep
+outfile = args.outfile
+# keep = args.keep
 
 # paths to run
 projdir = "/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp"
@@ -56,4 +59,5 @@ df = data.loc[data['eid'].isin(set(krows.squeeze()))]
 # df.dropna(inplace=True)
 
 # write appened / fixed file
-df.to_csv(Path(outsdir, f"{pheno}-eval.tsv"), sep="\t", index=False, header=False)
+# df.to_csv(Path(outsdir, f"{pheno}-eval.tsv"), sep="\t", index=False, header=False)
+df.to_csv(outfile, sep="\t", index=False, header=False)
