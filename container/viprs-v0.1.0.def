@@ -1,0 +1,6 @@
+Bootstrap: docker
+From: python:3.8-bookworm
+
+%post
+	apt update && apt install -y plink2
+	pip install viprs
