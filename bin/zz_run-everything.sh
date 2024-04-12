@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=def-jbpoline
 #SBATCH --job-name=viprs_all
-#SBATCH --time=05:00:00
+#SBATCH --time=06:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=32GB
 #SBATCH --array=0-9
@@ -64,11 +64,11 @@ echo "Fitting VIPRS on IDP: $IDP"
 
 echo " -- 1) Fitting VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
-	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-file $FITSDIR --sumstats-format "magenpy"
+	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format "magenpy"
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
-	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID
 
 echo " -- 3) Evaluating VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
