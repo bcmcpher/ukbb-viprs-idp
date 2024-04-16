@@ -21,7 +21,8 @@ module load scipy-stack
 PROJDIR=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp
 
 # path to the container
-APPTAIN=$PROJDIR/container/viprs-v0.1.0.sif
+APPTAIN=$PROJDIR/container/viprs-v0.1.0.sif  # v0.1.0
+#APPTAIN=$PROJDIR/container/viprs-fixed.sif  # v0.0.4
 
 # overhead paths
 LOGSDIR=$PROJDIR/bin/logs
@@ -56,6 +57,8 @@ python $PROJDIR/bin/copy-pheno-to-file.py $IDP $EVALS
 
 # the results (3) of the evaluated scores
 EOUTS=$JOBSDIR/${IDP}_${RUN}_result
+EDIFF=$JOBSDIR/${IDP}_${RUN}_diffs
+ERATO=$JOBSDIR/${IDP}_${RUN}_ratio
 
 # log redirect w/ useful name?
 exec &> $LOGSDIR/viprs_all_${IDP}.log
@@ -64,14 +67,17 @@ echo "Fitting VIPRS on IDP: $IDP"
 
 echo " -- 1) Fitting VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
-	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format "magenpy"
+	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy   # v0.1.0
+#	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-file $FITSDIR --sumstats-format magenpy  # v0.0.4
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
-	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID      # v0.1.0
+#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
-	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $EOUTS
+	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $EOUTS  # v0.1.0
+#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $EOUTS  # v0.0.4
 
 echo "Done fitting, scoring, and evaluting ${IDP} baseline."
