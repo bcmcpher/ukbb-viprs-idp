@@ -35,6 +35,7 @@ KEEPID=$DATADIR/keep_files/ukbb_qc_variants.keep
 
 # input files I need for fitting / scoring
 FITGWAS=$PROJDIR/data/idps-fixed
+PHENODT=$PROJDIR/data/idps-compare
 LD_DATA=$PROJDIR/data/ld
 
 # path to fits / outputs
@@ -51,16 +52,18 @@ SCORED=${SCORES}.prs
 
 # the evaluation input file
 EVALS=$JOBSDIR/${IDP}_${RUN}_evaluate.tsv
+EDIFF=$PHENODT/${IDP}_diff.tsv
+ERATO=$PHENODT/${IDP}_ratio.tsv
 
 # create the evaluation pheno file
 python $PROJDIR/bin/copy-pheno-to-file.py $IDP $EVALS
 
 # the results (3) of the evaluated scores
-EOUTS=$JOBSDIR/${IDP}_${RUN}_result
-EDIFF=$JOBSDIR/${IDP}_${RUN}_diffs
-ERATO=$JOBSDIR/${IDP}_${RUN}_ratio
+ENOUT=$JOBSDIR/${IDP}_${RUN}_result
+EDOUT=$JOBSDIR/${IDP}_${RUN}_diff
+EROUT=$PHENODT/${IDP}_${RUN}_ratio
 
-# log redirect w/ useful name?
+# log redirect w/ useful name
 exec &> $LOGSDIR/viprs_all_${IDP}.log
 
 echo "Fitting VIPRS on IDP: $IDP"
@@ -76,8 +79,19 @@ apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
 #	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
+echo " -- -- a) Estimating full sample..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
-	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $EOUTS  # v0.1.0
-#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $EOUTS  # v0.0.4
+	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.1.0
+#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.0.4
 
-echo "Done fitting, scoring, and evaluting ${IDP} baseline."
+echo " -- -- b) Estimating sample difference..."
+apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
+	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.1.0
+#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.0.4
+
+echo " -- -- c) Estimating sample ratio..."
+apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIN \
+	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EROUT  # v0.1.0
+#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EROUT  # v0.0.4
+
+echo "Done fitting, scoring, and evaluting ${IDP}."
