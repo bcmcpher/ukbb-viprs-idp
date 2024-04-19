@@ -31,7 +31,8 @@ TMPDIR=/scratch/bcmcpher/viprs
 
 # change these for evaluation / subsets
 RUN="ukbb-full"
-KEEPID=$DATADIR/keep_files/ukbb_qc_variants.keep
+KEEPID=$DATADIR/keep_files/ukbb_qc_observations.keep
+SNPSID=$DATADIR/keep_files/ukbb_qc_variants_hm3.keep
 
 # input files I need for fitting / scoring
 FITGWAS=$PROJDIR/data/idps-fixed
@@ -74,9 +75,9 @@ apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv04 \
 #	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy   # v0.1.0
 
 echo " -- 2) Scoring VIPRS..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv04 \
-#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
+apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
 	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID      # v0.1.0
+#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
