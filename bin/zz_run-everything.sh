@@ -80,18 +80,24 @@ apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv04 \
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
-	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.1.0
-#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.0.4
+if [ -f $EVALS ]; then
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.1.0
+	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.0.4
+fi
 
 echo " -- -- b) Estimating sample difference..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
-	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.1.0
-#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.0.4
+if [ -f $EDIFF ]; then
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.1.0
+	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.0.4
+fi
 
 echo " -- -- c) Estimating sample ratio..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIERv10 \
-	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EROUT  # v0.1.0
-#	  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EROUT  # v0.0.4
+if [ -f $ERATO ]; then
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIERv10 \
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.1.0
+	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.0.4
+fi
 
 echo "Done fitting, scoring, and evaluting ${IDP}."

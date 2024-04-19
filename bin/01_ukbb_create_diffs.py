@@ -18,7 +18,7 @@ else:
 for var in cols:
 
     print(f"Creating longitudinal change for : {var}")
-    
+
     # pull temp frames of ID and variable
     tmp2 = ses2[['eid', var]]
     tmp3 = ses3[['eid', var]]
@@ -34,7 +34,7 @@ for var in cols:
     if any(tmp.dtypes[1:] == 'object'):
         warnings.warn(f" -- Variable {var} is a string")
         continue
-    
+
     # take difference / ratio
     tmp['diff'] = tmp[var + '_t2'] - tmp[var + '_t1']
     # +value = grows over time; -value = shrinks over time
