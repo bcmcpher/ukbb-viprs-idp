@@ -75,8 +75,8 @@ apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv04 \
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv04 \
-	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
-#	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID      # v0.1.0
+#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID      # v0.1.0
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
