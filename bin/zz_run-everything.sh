@@ -51,16 +51,16 @@ SCORES=$JOBSDIR/${IDP}_${RUN}_score
 SCORED=${SCORES}.prs
 
 # the evaluation input file
-EVALS=$JOBSDIR/${IDP}_${RUN}_evaluate.tsv
-EDIFF=$PHENODT/${IDP}_diff.tsv
-ERATO=$PHENODT/${IDP}_ratio.tsv
+EVALS=$JOBSDIR/${IDP}_${RUN}_ses2_evaluate.tsv
+EDIFF=$PHENODT/${IDP}_${RUN}_difference.tsv
+ERATO=$PHENODT/${IDP}_${RUN}_ratio.tsv
 
 # create the evaluation pheno file
 python $PROJDIR/bin/copy-pheno-to-file.py $IDP $EVALS
 
 # the results (3) of the evaluated scores
 ENOUT=$JOBSDIR/${IDP}_${RUN}_result
-EDOUT=$JOBSDIR/${IDP}_${RUN}_diff
+EDOUT=$JOBSDIR/${IDP}_${RUN}_difference
 EROUT=$PHENODT/${IDP}_${RUN}_ratio
 
 # log redirect w/ useful name

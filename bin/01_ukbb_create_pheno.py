@@ -47,8 +47,8 @@ for var in cols:
     tmp3 = ses3[['eid', var]]
 
     # subset the rows to the keep indices
-    df2 = tmp2.loc[data['eid'].isin(set(krows.squeeze()))]
-    df3 = tmp3.loc[data['eid'].isin(set(krows.squeeze()))]
+    df2 = tmp2.loc[tmp2['eid'].isin(set(krows.squeeze()))]
+    df3 = tmp3.loc[tmp3['eid'].isin(set(krows.squeeze()))]
 
     # write files to disk after subsetting to keep indices
     df2.to_csv("/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}_ukbb-full_ses2_evaluate.tsv", sep="\t", index=False, header=False)
@@ -76,8 +76,8 @@ for var in cols:
     # create the output files
     odiff = tmp[['eid', 'eid', 'diff']]
     odiff.columns = ['fid', 'iid', var]  # not necessary
-    odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}-diff.tsv', sep='\t', index=False, header=False)
+    odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}_ukbb-full_difference.tsv', sep='\t', index=False, header=False)
 
     oratio = tmp[['eid', 'eid', 'ratio']]
     oratio.columns = ['fid', 'iid', var]  # not necessary
-    oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}-ratio.tsv', sep='\t', index=False, header=False)
+    oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}_ukbb-full_ratio.tsv', sep='\t', index=False, header=False)
