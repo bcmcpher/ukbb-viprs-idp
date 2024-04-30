@@ -23,7 +23,8 @@ if all(ses2.columns == ses3.columns):
 else:
     warnings.warn("Columns somehow don't match.")
 
-print("Beginning loop of variables to export:")
+print("Beginning loop of variables to export (N={len(cols)}):")
+
 # for every column
 for var in cols:
 
