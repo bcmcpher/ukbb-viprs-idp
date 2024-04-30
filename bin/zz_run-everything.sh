@@ -52,7 +52,7 @@ SCORES=$JOBSDIR/${IDP}_${RUN}_score
 SCORED=${SCORES}.prs
 
 # the evaluation input file
-EVALS=$JOBSDIR/${IDP}_${RUN}_ses2_evaluate.tsv
+EVALS=$JOBSDIR/${IDP}_${RUN}_ses2-evaluate.tsv
 EDIFF=$PHENODT/${IDP}_${RUN}_difference.tsv
 ERATO=$PHENODT/${IDP}_${RUN}_ratio.tsv
 
