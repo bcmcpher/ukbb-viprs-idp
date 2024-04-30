@@ -23,15 +23,18 @@ if all(ses2.columns == ses3.columns):
 else:
     warnings.warn("Columns somehow don't match.")
 
+# get the length for logging
+nvar = len(cols)
+
 print("Beginning loop of variables to export (N={len(cols)}):")
 
 # for every column
-for var in cols:
+for idx, var in enumerate(cols):
 
     # get the pheno index
     pheno = data.loc[data['UKB ID'] == var]['Pheno'].item()
 
-    print(f" -- Creating longitudinal change for Phenotype / Variable: {pheno} / {var}")
+    print(f" -- Creating Phenotype / Variable: {pheno} / {var} (IDX: {idx}/{nvar})")
 
     # pull temp frames of ID and variable
     tmp2 = ses2[['eid', var]]
@@ -62,16 +65,16 @@ for var in cols:
     # keep and sort the IDs that having imaging data and match keep file
     pdata = pdata.loc[tmp2['eid'].isin(set(krows.squeeze()))]
     pdata.columns = ['fid', 'iid', pheno]
-    pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}_{runid}_baseline-eval.tsv', sep='\t', index=False, header=False)
+    pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-{runid}/{pheno}_{runid}_baseline-eval.tsv', sep='\t', index=False, header=False)
     print(f" --  -- Saved baseline UKBB-{var} to phenotype index {pheno} (N={pdata.shape[0]})")
 
     # create the output files
     odiff = tmp[['eid', 'eid', 'diff']]
     odiff.columns = ['fid', 'iid', pheno]  # not necessary
-    odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}_{runid}_difference.tsv', sep='\t', index=False, header=False)
+    odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-{runid}/{pheno}_{runid}_difference.tsv', sep='\t', index=False, header=False)
     print(f" --  -- Saved T2-T1 difference of UKBB-{var} to phenotype index {pheno} (N={odiff.shape[0]})")
 
     oratio = tmp[['eid', 'eid', 'ratio']]
     oratio.columns = ['fid', 'iid', pheno]  # not necessary
-    oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}_{runid}_ratio.tsv', sep='\t', index=False, header=False)
+    oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-{runid}/{pheno}_{runid}_ratio.tsv', sep='\t', index=False, header=False)
     print(f" --  -- Saved T2/T1 ratio of UKBB-{var} to phenotype index {pheno} (N={odiff.shape[0]})")

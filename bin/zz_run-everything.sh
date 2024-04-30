@@ -40,7 +40,7 @@ PHENODT=$PROJDIR/data/idps-compare
 LD_DATA=$PROJDIR/data/ld-new
 
 # path to fits / outputs
-JOBSDIR=$PROJDIR/data/viprs-full/$IDP
+JOBSDIR=$PROJDIR/data/viprs-$RUN/$IDP
 mkdir -p $JOBSDIR
 
 # the fit (1) path and output file
@@ -52,12 +52,12 @@ SCORES=$JOBSDIR/${IDP}_${RUN}_score
 SCORED=${SCORES}.prs
 
 # the evaluation input file
-EVALS=$JOBSDIR/${IDP}_${RUN}_ses2-evaluate.tsv
+EVALS=$JOBSDIR/${IDP}_${RUN}_baseline-eval.tsv
 EDIFF=$PHENODT/${IDP}_${RUN}_difference.tsv
 ERATO=$PHENODT/${IDP}_${RUN}_ratio.tsv
 
 # create the evaluation pheno file
-python $PROJDIR/bin/copy-pheno-to-file.py $IDP $EVALS
+# python $PROJDIR/bin/copy-pheno-to-file.py $IDP $EVALS
 
 # the results (3) of the evaluated scores
 ENOUT=$JOBSDIR/${IDP}_${RUN}_result
