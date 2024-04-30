@@ -68,9 +68,9 @@ for var in cols:
     odiff = tmp[['eid', 'eid', 'diff']]
     odiff.columns = ['fid', 'iid', pheno]  # not necessary
     odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}_{runid}_difference.tsv', sep='\t', index=False, header=False)
-    print(f" --  -- Saved T1-T2 difference of UKBB-{var} to phenotype index {pheno} (N={odiff.shape[0]})")
+    print(f" --  -- Saved T2-T1 difference of UKBB-{var} to phenotype index {pheno} (N={odiff.shape[0]})")
 
     oratio = tmp[['eid', 'eid', 'ratio']]
     oratio.columns = ['fid', 'iid', pheno]  # not necessary
     oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}_{runid}_ratio.tsv', sep='\t', index=False, header=False)
-    print(f" --  -- Saved T1-T2 ratio of UKBB-{var} to phenotype index {pheno} (N={odiff.shape[0]})")
+    print(f" --  -- Saved T2/T1 ratio of UKBB-{var} to phenotype index {pheno} (N={odiff.shape[0]})")
