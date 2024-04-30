@@ -36,7 +36,7 @@ SNPSID=$DATADIR/keep_files/ukbb_qc_variants_hm3.keep
 
 # input files I need for fitting / scoring
 FITGWAS=$PROJDIR/data/idps-fixed
-PHENODT=$PROJDIR/data/idps-compare
+PHENODT=$PROJDIR/data/idps_${RUN}
 LD_DATA=$PROJDIR/data/ld-new
 
 # path to fits / outputs
