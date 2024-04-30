@@ -38,6 +38,8 @@ for idx, var in enumerate(cols):
     if len(pheno) > 1:
         print(" -- Phenotype / Variable {pheno} / {var} has more than one row (FCONN). Skip.")
         continue
+    else:
+        pheno = pheno.item()
 
     print(f" -- Creating Phenotype / Variable: {pheno} / {var} (IDX: {idx}/{nvar})")
 
