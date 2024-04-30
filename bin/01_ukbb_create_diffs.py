@@ -7,6 +7,12 @@ print("Loading the data...")
 ses2 = pd.read_csv("/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/ukbb_idps_ses-2.csv", header=0, index_col=0, na_values='NaN')
 ses3 = pd.read_csv("/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/ukbb_idps_ses-3.csv", header=0, index_col=0, na_values='NaN')
 
+# load the legend to get the fixed id
+data = pd.read_csv("/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_legend.csv", header=0, index_col=0, na_values="-", converters={'Pheno': str})
+
+# load keep data
+krows = pd.read_csv("/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/keep_files/ukbb_qc_observations.keep")
+
 # sanity check that the rows match
 if all(ses2.columns == ses3.columns):
     cols = ses2.columns
@@ -17,7 +23,10 @@ else:
 # for every column
 for var in cols:
 
-    print(f"Creating longitudinal change for : {var}")
+    # get the pheno index
+    pheno = data.loc[data['UKB ID'] == var]['Pheno'].item()
+
+    print(f"Creating longitudinal change for Phenotype - Variable: {pheno} - {var}")
 
     # pull temp frames of ID and variable
     tmp2 = ses2[['eid', var]]
@@ -42,11 +51,19 @@ for var in cols:
     tmp['ratio'] = tmp[var + '_t2'] - tmp[var + '_t1']
     # >1 = grows over time; <1 = shrinks over time
 
+    # reorder columns for clean export
+    pdata = tmp2[['eid', 'eid', var]]
+
+    # keep and sort the IDs that having imaging data and match keep file
+    pdata = pdata.loc[tmp2['eid'].isin(set(krows.squeeze()))]
+    pdata.columns = ['fid', 'iid', pheno]
+    pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}-ses2_evaluate.tsv', sep='\t', index=False, header=False)
+
     # create the output files
     odiff = tmp[['eid', 'eid', 'diff']]
-    odiff.columns = ['fid', 'iid', var]  # not necessary
-    odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}-diff.tsv', sep='\t', index=False, header=False)
+    odiff.columns = ['fid', 'iid', pheno]  # not necessary
+    odiff.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}-diff.tsv', sep='\t', index=False, header=False)
 
     oratio = tmp[['eid', 'eid', 'ratio']]
-    oratio.columns = ['fid', 'iid', var]  # not necessary
-    oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{var}-ratio.tsv', sep='\t', index=False, header=False)
+    oratio.columns = ['fid', 'iid', pheno]  # not necessary
+    oratio.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps-compare/{pheno}-ratio.tsv', sep='\t', index=False, header=False)

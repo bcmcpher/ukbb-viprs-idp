@@ -124,18 +124,22 @@ raw.columns = ['IID', 'in.white.British.ancestry.subset', 'putative.sex.chromoso
 # save them
 
 # create the subset list of IID (eid)
-out = raw.loc[(raw['IID'] > 0) & (raw['in.white.British.ancestry.subset'] == 1) & (raw['used.in.pca.calculation'] == 1) & (raw['in.Phasing.Input.ch1_22'] == 1) & (raw['excess.relatives'] == 0) & (raw['putative.sex.chromosome.aneuploidy'] == 0)]
+out = raw.loc[(raw['IID'] > 0) &
+              (raw['in.white.British.ancestry.subset'] == 1) &
+              (raw['used.in.pca.calculation'] == 1) &
+              (raw['in.Phasing.Input.ch1_22'] == 1) &
+              (raw['excess.relatives'] == 0) &
+              (raw['putative.sex.chromosome.aneuploidy'] == 0)]
 
 print(f"Length of out: {out.shape}")
 
-# out is IID and FID is IID (already excluding relatives sufficiently?)
+# out is only IID for participant keep
 out = out['IID']
-# out['FID'] = out['IID'] # does this strictly need FID?
 
 # reorder / rename variables?
 
 # write the keep file
-out.to_csv('/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/keep_files/ukbb_qc_variants.keep', sep='\t', header=False, index=False)
+out.to_csv('/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/keep_files/ukbb_qc_observations.keep', sep='\t', header=False, index=False)
 
 #
 # other demographics?

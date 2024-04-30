@@ -2,8 +2,8 @@
 #SBATCH --account=def-jbpoline
 #SBATCH --job-name=viprs_all
 #SBATCH --time=06:00:00
-#SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=32GB
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8GB
 #SBATCH --array=0-9
 #SBATCH --output=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/bin/logs/junk-logs_%A_%a.log
 
@@ -21,8 +21,8 @@ module load scipy-stack
 PROJDIR=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp
 
 # path to the container
-APPTAINERv04=$PROJDIR/container/viprs-fixed.sif   # v0.0.4
-APPTAINERv01=$PROJDIR/container/viprs-v0.1.0.sif  # v0.1.0
+#APPTAINER=$PROJDIR/container/viprs-fixed.sif   # v0.0.4
+APPTAINER=$PROJDIR/container/viprs-v0.1.0.sif   # v0.1.0
 
 # overhead paths
 LOGSDIR=$PROJDIR/bin/logs
@@ -30,14 +30,14 @@ DATADIR=$PROJDIR/data
 TMPDIR=/scratch/bcmcpher/viprs
 
 # change these for evaluation / subsets
-RUN="ukbb-full"
+RUN="ukbb-qc"
 KEEPID=$DATADIR/keep_files/ukbb_qc_observations.keep
 SNPSID=$DATADIR/keep_files/ukbb_qc_variants_hm3.keep
 
 # input files I need for fitting / scoring
 FITGWAS=$PROJDIR/data/idps-fixed
 PHENODT=$PROJDIR/data/idps-compare
-LD_DATA=$PROJDIR/data/ld
+LD_DATA=$PROJDIR/data/ld-new
 
 # path to fits / outputs
 JOBSDIR=$PROJDIR/data/viprs-full/$IDP
@@ -70,33 +70,33 @@ exec &> $LOGSDIR/viprs_all_${IDP}.log
 echo "Fitting VIPRS on IDP: $IDP"
 
 echo " -- 1) Fitting VIPRS..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv04 \
-	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-file $FITSDIR --sumstats-format magenpy  # v0.0.4
-#	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy   # v0.1.0
+apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy   # v0.1.0
+#	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-file $FITSDIR --sumstats-format magenpy  # v0.0.4
 
 echo " -- 2) Scoring VIPRS..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
-	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID      # v0.1.0
-#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID  # v0.0.4
+apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID  # v0.1.0
+#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID                # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
 if [ -f $EVALS ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.1.0
 	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.0.4
 fi
 
 echo " -- -- b) Estimating sample difference..."
 if [ -f $EDIFF ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINERv10 \
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.1.0
 	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.0.4
 fi
 
 echo " -- -- c) Estimating sample ratio..."
 if [ -f $ERATO ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIERv10 \
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.1.0
 	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.0.4
 fi
