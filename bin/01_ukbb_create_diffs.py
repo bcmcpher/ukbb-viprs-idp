@@ -32,7 +32,12 @@ print("Beginning loop of variables to export (N={len(cols)}):")
 for idx, var in enumerate(cols):
 
     # get the pheno index
-    pheno = data.loc[data['UKB ID'] == var]['Pheno'].item()
+    pheno = data.loc[data['UKB ID'] == var]['Pheno']
+
+    # deal w/ repeated vars
+    if len(pheno) > 1:
+        print(" -- Phenotype / Variable {pheno} / {var} has more than one row (FCONN). Skip.")
+        continue
 
     print(f" -- Creating Phenotype / Variable: {pheno} / {var} (IDX: {idx}/{nvar})")
 
