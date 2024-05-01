@@ -37,10 +37,10 @@ SNPSID=$DATADIR/keep_files/ukbb_qc_variants_hm3.keep
 # input files I need for fitting / scoring
 FITGWAS=$PROJDIR/data/idps-fixed
 PHENODT=$PROJDIR/data/idps_${RUN}
-LD_DATA=$PROJDIR/data/ld-new
+LD_DATA=$PROJDIR/data/ld-new/float32
 
 # path to fits / outputs
-JOBSDIR=$PROJDIR/data/viprs-$RUN/$IDP
+JOBSDIR=$PROJDIR/data/viprs_$RUN/$IDP
 mkdir -p $JOBSDIR
 
 # the fit (1) path and output file
@@ -71,12 +71,12 @@ echo "Fitting VIPRS on IDP: $IDP"
 
 echo " -- 1) Fitting VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy   # v0.1.0
+	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy --threads 4  # v0.1.0
 #	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-file $FITSDIR --sumstats-format magenpy  # v0.0.4
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID  # v0.1.0
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --threads 4 # v0.1.0
 #	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID                # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
