@@ -44,11 +44,12 @@ JOBSDIR=$PROJDIR/data/viprs_$RUN/$IDP
 mkdir -p $JOBSDIR
 
 # the fit (1) path and output file
-FITSDIR=$JOBSDIR/$IDP
-FITSOUT=${FITSDIR}.fit
+FITSDIR=$JOBSDIR
+FITSOUT=VIPRS_EM.fit.gz
 
 # the scoring (2) path and output file
 SCORES=$JOBSDIR/${IDP}_${RUN}_score
+# SCORES=$JOBSDIR
 SCORED=${SCORES}.prs
 
 # the evaluation input file
@@ -76,7 +77,7 @@ apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --threads 4 # v0.1.0
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --threads 4 --backend plink # v0.1.0
 #	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID                # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
