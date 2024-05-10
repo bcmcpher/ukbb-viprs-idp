@@ -21,7 +21,7 @@ module load scipy-stack
 PROJDIR=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp
 
 # path to the container
-APPTAINER=$PROJDIR/container/viprs-v0.1.0.sif   # v0.1.0
+APPTAINER=$PROJDIR/container/viprs-v0.1.0.sif
 
 # overhead paths
 LOGSDIR=$PROJDIR/bin/logs
@@ -47,9 +47,9 @@ FITSDIR=$JOBSDIR
 FITSOUT=VIPRS_EM.fit.gz
 
 # the scoring (2) path and output file
-SCORES=$JOBSDIR/${IDP}_${RUN}_score
+SCORES=$JOBSDIR/VIPRS_${IDP}_${RUN}_SCORE
 # SCORES=$JOBSDIR
-SCORED=${SCORES}.prs
+SCORED=${SCORES}  # does this need an extension? change w/ --compress?
 
 # the evaluation input file
 EVALS=$JOBSDIR/${IDP}_${RUN}_baseline-eval.tsv
@@ -74,7 +74,7 @@ apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --threads 4 --backend plink # v0.1.0
+	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --backend plink --threads 4  # v0.1.0
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
