@@ -26,7 +26,7 @@ APPTAINER=$PROJDIR/container/viprs-v0.1.0.sif
 # overhead paths
 LOGSDIR=$PROJDIR/bin/logs
 DATADIR=$PROJDIR/data
-TMPDIR=/scratch/bcmcpher/viprs
+TMPDIR=/scratch/bcmcpher/viprs  # swapped w/ $JOBSDIR for debugging score
 
 # change these for evaluation / subsets
 RUN="ukbb-qc"
@@ -78,7 +78,7 @@ fi
 echo " -- 2) Scoring VIPRS..."
 if [ -f $FITSOUT ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-			  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --backend plink --threads 4
+			  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $JOBSDIR --keep $KEEPID --extract $SNPSID --backend plink --threads 4
 fi
 
 echo " -- 3) Evaluating VIPRS..."
