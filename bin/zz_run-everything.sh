@@ -35,6 +35,7 @@ SNPSID=$DATADIR/keep_files/ukbb_qc_variants_hm3.keep
 
 # input files I need for fitting / scoring
 FITGWAS=$PROJDIR/data/idps-fixed
+FGWAS=$FITGWAS/${IDP}-fixed.txt
 PHENODT=$PROJDIR/data/idps_${RUN}
 LD_DATA=$PROJDIR/data/ld-new/float32
 
@@ -69,36 +70,40 @@ exec &> $LOGSDIR/viprs_all_${IDP}.log
 echo "Fitting VIPRS on IDP: $IDP"
 
 echo " -- 1) Fitting VIPRS..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy --threads 4  # v0.1.0
+if [ -f $FITGWAS/${IDP}-fixed.txt ]; then
+   apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+			 viprs_fit --sumstats $FGWAS --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy --threads 4
+fi
 
 echo " -- 2) Scoring VIPRS..."
-apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --backend plink --threads 4  # v0.1.0
+if [ -f $FITSOUT ]; then
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+			  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --backend plink --threads 4
+fi
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
 if [ -f $EVALS ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-			  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.1.0
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT
 fi
 
 echo " -- -- b) Estimating full sample..."
 if [ -f $EVALS ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-			  viprs_evaluate --prs-file $SCORED --phenotype-file $FVALS --phenotype-likelihood gaussian --output-file $FNOUT  # v0.1.0
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $FVALS --phenotype-likelihood gaussian --output-file $FNOUT
 fi
 
 echo " -- -- c) Estimating sample difference..."
 if [ -f $EDIFF ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
-			  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.1.0
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT
 fi
 
 echo " -- -- d) Estimating sample ratio..."
 if [ -f $ERATO ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIER \
-			  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.1.0
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT
 fi
 
 echo "Done fitting, scoring, and evaluting ${IDP}."
