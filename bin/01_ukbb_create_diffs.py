@@ -68,6 +68,7 @@ for idx, var in enumerate(cols):
 
     # reorder columns for clean export
     pdata = tmp2[['eid', 'eid', var]]
+    pdat2 = tmp3[['eid', 'eid', var]]
 
     # keep and sort the IDs that having imaging data and match keep file
     pdata = pdata.loc[tmp2['eid'].isin(set(krows.squeeze()))]
@@ -75,9 +76,9 @@ for idx, var in enumerate(cols):
     pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_{runid}/{pheno}_{runid}_baseline-eval.tsv', sep='\t', index=False, header=False)
     print(f" --  -- Saved baseline UKBB-{var} to phenotype index {pheno} (N={pdata.shape[0]})")
 
-    pdata = pdata.loc[tmp3['eid'].isin(set(krows.squeeze()))]
-    pdata.columns = ['fid', 'iid', pheno]
-    pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_{runid}/{pheno}_{runid}_followup-eval.tsv', sep='\t', index=False, header=False)
+    pdat2 = pdat2.loc[tmp3['eid'].isin(set(krows.squeeze()))]
+    pdat2.columns = ['fid', 'iid', pheno]
+    pdat2.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_{runid}/{pheno}_{runid}_followup-eval.tsv', sep='\t', index=False, header=False)
     print(f" --  -- Saved followup visit UKBB-{var} to phenotype index {pheno} (N={pdata.shape[0]})")
 
     # create the output files
