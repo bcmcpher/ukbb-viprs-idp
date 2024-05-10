@@ -21,7 +21,6 @@ module load scipy-stack
 PROJDIR=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp
 
 # path to the container
-#APPTAINER=$PROJDIR/container/viprs-fixed.sif   # v0.0.4
 APPTAINER=$PROJDIR/container/viprs-v0.1.0.sif   # v0.1.0
 
 # overhead paths
@@ -54,14 +53,13 @@ SCORED=${SCORES}.prs
 
 # the evaluation input file
 EVALS=$JOBSDIR/${IDP}_${RUN}_baseline-eval.tsv
+FVALS=$JOBSDIR/${IDP}_${RUN}_followup-eval.tsv
 EDIFF=$PHENODT/${IDP}_${RUN}_difference.tsv
 ERATO=$PHENODT/${IDP}_${RUN}_ratio.tsv
 
-# create the evaluation pheno file
-# python $PROJDIR/bin/copy-pheno-to-file.py $IDP $EVALS
-
 # the results (3) of the evaluated scores
-ENOUT=$JOBSDIR/${IDP}_${RUN}_result
+ENOUT=$JOBSDIR/${IDP}_${RUN}_baseline
+FNOUT=$JOBSDIR/${IDP}_${RUN}_followup
 EDOUT=$JOBSDIR/${IDP}_${RUN}_difference
 EROUT=$PHENODT/${IDP}_${RUN}_ratio
 
@@ -73,33 +71,34 @@ echo "Fitting VIPRS on IDP: $IDP"
 echo " -- 1) Fitting VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy --threads 4  # v0.1.0
-#	  viprs_fit --sumstats $FITGWAS/${IDP}-fixed.txt --ld-panel $LD_DATA --output-file $FITSDIR --sumstats-format magenpy  # v0.0.4
 
 echo " -- 2) Scoring VIPRS..."
 apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 	  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID --extract $SNPSID --threads 4 --backend plink # v0.1.0
-#	  viprs_score --fit-files $FITSOUT --bed-files "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $TMPDIR --keep $KEEPID                # v0.0.4
 
 echo " -- 3) Evaluating VIPRS..."
 echo " -- -- a) Estimating full sample..."
 if [ -f $EVALS ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.1.0
-	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT  # v0.0.4
 fi
 
-echo " -- -- b) Estimating sample difference..."
+echo " -- -- b) Estimating full sample..."
+if [ -f $EVALS ]; then
+	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+			  viprs_evaluate --prs-file $SCORED --phenotype-file $FVALS --phenotype-likelihood gaussian --output-file $FNOUT  # v0.1.0
+fi
+
+echo " -- -- c) Estimating sample difference..."
 if [ -f $EDIFF ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.1.0
-	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT  # v0.0.4
 fi
 
-echo " -- -- c) Estimating sample ratio..."
+echo " -- -- d) Estimating sample ratio..."
 if [ -f $ERATO ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.1.0
-	#		  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT  # v0.0.4
 fi
 
 echo "Done fitting, scoring, and evaluting ${IDP}."

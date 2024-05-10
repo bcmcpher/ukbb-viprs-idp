@@ -75,6 +75,11 @@ for idx, var in enumerate(cols):
     pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_{runid}/{pheno}_{runid}_baseline-eval.tsv', sep='\t', index=False, header=False)
     print(f" --  -- Saved baseline UKBB-{var} to phenotype index {pheno} (N={pdata.shape[0]})")
 
+    pdata = pdata.loc[tmp3['eid'].isin(set(krows.squeeze()))]
+    pdata.columns = ['fid', 'iid', pheno]
+    pdata.to_csv(f'/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_{runid}/{pheno}_{runid}_followup-eval.tsv', sep='\t', index=False, header=False)
+    print(f" --  -- Saved followup visit UKBB-{var} to phenotype index {pheno} (N={pdata.shape[0]})")
+
     # create the output files
     odiff = tmp[['eid', 'eid', 'diff']]
     odiff.columns = ['fid', 'iid', pheno]  # not necessary
