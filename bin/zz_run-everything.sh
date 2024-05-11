@@ -45,16 +45,15 @@ mkdir -p $JOBSDIR
 
 # the fit (1) path and output file
 FITSDIR=$JOBSDIR
-FITSOUT=VIPRS_EM.fit.gz
+FITSOUT=$FITSDIR/VIPRS_EM.fit.gz
 
 # the scoring (2) path and output file
-SCORES=$JOBSDIR/VIPRS_${IDP}_${RUN}_SCORE
-# SCORES=$JOBSDIR
-SCORED=${SCORES}  # does this need an extension? change w/ --compress?
+SCORES=$JOBSDIR/VIPRS_SCORE
+SCORED=${SCORES}.prs
 
 # the evaluation input file
-EVALS=$JOBSDIR/${IDP}_${RUN}_baseline-eval.tsv
-FVALS=$JOBSDIR/${IDP}_${RUN}_followup-eval.tsv
+EVALS=$PHENODT/${IDP}_${RUN}_baseline-eval.tsv
+FVALS=$PHENODT/${IDP}_${RUN}_followup-eval.tsv
 EDIFF=$PHENODT/${IDP}_${RUN}_difference.tsv
 ERATO=$PHENODT/${IDP}_${RUN}_ratio.tsv
 
@@ -62,7 +61,7 @@ ERATO=$PHENODT/${IDP}_${RUN}_ratio.tsv
 ENOUT=$JOBSDIR/${IDP}_${RUN}_baseline
 FNOUT=$JOBSDIR/${IDP}_${RUN}_followup
 EDOUT=$JOBSDIR/${IDP}_${RUN}_difference
-EROUT=$PHENODT/${IDP}_${RUN}_ratio
+EROUT=$JOBSDIR/${IDP}_${RUN}_ratio
 
 # log redirect w/ useful name
 exec &> $LOGSDIR/viprs_all_${IDP}.log
@@ -89,7 +88,7 @@ if [ -f $EVALS ]; then
 fi
 
 echo " -- -- b) Estimating full sample..."
-if [ -f $EVALS ]; then
+if [ -f $FVALS ]; then
 	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $FVALS --phenotype-likelihood gaussian --output-file $FNOUT
 fi
