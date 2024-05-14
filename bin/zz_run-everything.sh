@@ -26,7 +26,6 @@ APPTAINER=$PROJDIR/container/viprs-v0.1.0.sif
 # overhead paths
 LOGSDIR=$PROJDIR/bin/logs
 DATADIR=$PROJDIR/data
-TMPDIR=/scratch/bcmcpher/viprs  # swapped w/ $JOBSDIR for debugging score
 
 # change these for evaluation / subsets
 RUN="ukbb-qc"
