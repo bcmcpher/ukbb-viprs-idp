@@ -4,7 +4,7 @@
 #SBATCH --time=06:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=8GB
-#SBATCH --array=0-9
+#SBATCH --array=0-999
 #SBATCH --output=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/bin/logs/junk-logs_%A_%a.log
 
 # # max array: 3935
@@ -70,38 +70,38 @@ echo "Fitting VIPRS on IDP: $IDP"
 
 echo " -- 1) Fitting VIPRS..."
 if [ -f $FITGWAS/${IDP}-fixed.txt ]; then
-   apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+   apptainer exec -B $PROJDIR $APPTAINER \
 			 viprs_fit --sumstats $FGWAS --ld-panel $LD_DATA --output-dir $FITSDIR --sumstats-format magenpy --threads 4
 fi
 
 echo " -- 2) Scoring VIPRS..."
 if [ -f $FITSOUT ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+	apptainer exec -B $PROJDIR $APPTAINER \
 			  viprs_score --fit-files $FITSOUT --bfile "$DATADIR/bed/*.bed" --output-file $SCORES --temp-dir $JOBSDIR --keep $KEEPID --extract $SNPSID --backend plink --threads 4
 fi
 
 echo " -- 3) Evaluating VIPRS..."
-echo " -- -- a) Estimating full sample..."
+echo " -- -- a) Evaluating full ses-2 sample..."
 if [ -f $EVALS ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+	apptainer exec -B $PROJDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $EVALS --phenotype-likelihood gaussian --output-file $ENOUT
 fi
 
-echo " -- -- b) Estimating full sample..."
+echo " -- -- b) Evaluating full ses-3 sample..."
 if [ -f $FVALS ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+	apptainer exec -B $PROJDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $FVALS --phenotype-likelihood gaussian --output-file $FNOUT
 fi
 
-echo " -- -- c) Estimating sample difference..."
+echo " -- -- c) Evaluating sample difference..."
 if [ -f $EDIFF ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAINER \
+	apptainer exec -B $PROJDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $EDIFF --phenotype-likelihood gaussian --output-file $EDOUT
 fi
 
-echo " -- -- d) Estimating sample ratio..."
+echo " -- -- d) Evaluating sample ratio..."
 if [ -f $ERATO ]; then
-	apptainer exec -B $PROJDIR -B $TMPDIR $APPTAIER \
+	apptainer exec -B $PROJDIR $APPTAINER \
 			  viprs_evaluate --prs-file $SCORED --phenotype-file $ERATO --phenotype-likelihood gaussian --output-file $EROUT
 fi
 
