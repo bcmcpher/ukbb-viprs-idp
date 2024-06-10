@@ -5,38 +5,35 @@ SUBJ=$1
 SESS=$2
 
 # where to make intermediary files
-WORKDIR=./work
+WORKDIR=/scratch/bcmcpher/ohbm/sub-${SUBJ}_ses-${SESS}
+mkdir -p $WORKDIR
 
 # build BIDS name
-BIDSSTEM=sub-${SUBJ}_ses-${SESS}
+BIDSSTEM=/tractoflow_results/sub-${SUBJ}_ses-${SESS}
 
-#
 # TODO - set paths to these files
-#
 
 # build input file paths
-T1=${BIDSSTEM}__t1_resampled.nii.gz
-FA=${BIDSSTEM}__fa.nii.gz
-MD=${BIDSSTEM}__md.nii.gz
+T1=${BIDSSTEM}/Resample_T1/sub-${SUBJ}_ses-${SESS}__t1_resampled.nii.gz
+FA=${BIDSSTEM}/DTI_Metrics/sub-${SUBJ}_ses-${SESS}__fa.nii.gz
+MD=${BIDSSTEM}/DTI_Metrics/sub-${SUBJ}_ses-${SESS}__md.nii.gz
 
 # reference templates
-MNI=MNI152_T1_1mm.nii.gz
-JHU=JHU-ICBM-labels-1mm.nii.gz
+MNI=/usr/share/fsl/data/standard/MNI152_T1_1mm.nii.gz
+JHU=/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/bin/JHU-ICBM-labels-1mm.nii.gz
 
 # existing affine xform file
-T12DWI=${BIDSSTEM}__output0GenericAffine.mat
+T12DWI=${BIDSSTEM}/Register_T1/sub-${SUBJ}_ses-${SESS}__output0GenericAffine.mat
 
 # output stem of new affine
-MNI2T1=${BIDSSTEM}__mni-to-t1
+MNI2T1=$WORKDIR/sub-${SUBJ}_ses-${SESS}__mni-to-t1
 
-#
 # end of paths TODO
-#
 
 # linear registration of T1 to MNI
 echo "Estimating T1 to MNI for composite xform..."
 antsRegistration --dimensionality 3 --float 0 \
-				 --output [$WORKDIR/${MNI2T1}_,$WORKDIR/${MNI2T1}_Warped.nii.gz] \
+				 --output [${MNI2T1}_,${MNI2T1}_Warped.nii.gz] \
 				 --interpolation Linear \
 				 --winsorize-image-intensities [0.005,0.995] \
 				 --use-histogram-matching 0 \
@@ -57,9 +54,9 @@ echo "Applying MNI -> T1 -> DWI xform to labels..."
 antsApplyTransforms --dimensionality 3 \
 					--input $JHU \
 					--reference-image $FA \
-					--output $WORKDIR/test-labels.nii.gz \
+					--output $WORKDIR/sub-${SUBJ}_ses-${SESS}_wm-labels.nii.gz \
 					--interpolation NearestNeighbor \
-					--transform $T12DWI $WORKDIR/${MNI2T1}_0GenericAffine.mat
+					--transform $T12DWI ${MNI2T1}_0GenericAffine.mat
 
 # call python fxn to build average values w/ xformed labels
-python ./extract-values-from-labels.py $1 $2 ./
+python /lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/bin/extract-values-from-labels.py $1 $2 /lustre03/project/6018311/bcmcpher/ukbb-virps-idp/data/ohbm

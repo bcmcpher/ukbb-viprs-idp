@@ -27,21 +27,20 @@ sess = args.sess
 output_path = args.output
 
 # the "parsed" input file stems
-# TODO: add paths to inputs
-fa_file = f"sub-{subj}_ses-{sess}__fa.nii.gz"
-md_file = f"sub-{subj}_ses-{sess}__md.nii.gz"
+fa_file = f"/tractoflow_results/sub-{subj}_ses-{sess}/DTI_Metrics/sub-{subj}_ses-{sess}__fa.nii.gz"
+md_file = f"/tractoflow_results/sub-{subj}_ses-{sess}/DTI_Metrics/sub-{subj}_ses-{sess}__md.nii.gz"
 df_file = f"{output_path}/sub-{subj}_ses-{sess}_wm-stats.csv"
 
 # the unchanging template files
-jh_file = "work/test-labels.nii.gz"
-jh_fxml = "JHU-labels.xml"
+jh_file = f"/scratch/bcmcpher/ohbm/sub-{subj}_ses-{sess}/sub-{subj}_ses-{sess}_wm-labels.nii.gz"
+jh_fxml = "/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/bin/JHU-labels.xml"
 
 # load the ref volume b/c I have to fix names NOW
 jh_dat = nib.load(jh_file).get_fdata()
 jh_unq = np.unique(jh_dat[jh_dat > 0])
 
 # import legend file for
-data = pd.read_csv("idps_legend.csv",
+data = pd.read_csv("/lustre03/project/6018311/bcmcpher/ukbb-viprs-idp/data/idps_legend.csv",
                    header=0, index_col=0,
                    na_values="-",
                    converters={'Pheno': str})
