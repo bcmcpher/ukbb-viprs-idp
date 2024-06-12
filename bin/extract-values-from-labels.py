@@ -66,7 +66,7 @@ for ob in ["FA", "MD"]:
         if any(data["IDP short name"] == tvar):
             # pull the UKB ID value for output name
             val = data.loc[data["IDP short name"] == tvar, "UKB ID"].item()
-            print(f"Adding UKB ID: {val} at index {idx} for variable: {tvar}")
+            # print(f"Adding UKB ID: {val} at index {idx} for variable: {tvar}")
             jh_labs.append(val)
             jh_name.append(dt.text.replace(" ", "_"))
             jh_idx.append(idx)  # of course this is too long
@@ -92,7 +92,7 @@ md_out = []
 
 # for the every label, pull the average of the values
 for idx, lab in enumerate(jh_idx):
-    print(f"Extracting: {lab} - {jh_name[idx]}")
+    # print(f"Extracting: {lab} - {jh_name[idx]}")
     fa_out.append(np.mean(fa_dat[jh_dat == lab]))
     md_out.append(np.mean(md_dat[jh_dat == lab]))
 
